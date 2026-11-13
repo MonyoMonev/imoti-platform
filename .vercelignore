@@ -1,0 +1,6 @@
+.data
+.next
+.next-*
+node_modules
+tests/shots
+*.log

@@ -1,0 +1,10 @@
+import { chromium } from 'playwright-core';
+const url = process.argv[2];
+const b = await chromium.launch({ channel: 'chrome', headless: true });
+const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+p.on('console', (m) => m.type() === 'error' && console.log('CONSOLE:', m.text().slice(0, 2500)));
+p.on('pageerror', (e) => console.log('PAGEERROR:', e.message));
+p.on('response', (r) => r.status() >= 400 && console.log('HTTP', r.status(), r.url()));
+await p.goto(url, { waitUntil: 'networkidle' });
+await p.waitForTimeout(800);
+await b.close();

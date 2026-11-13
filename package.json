@@ -1,0 +1,31 @@
+{
+  "name": "imoti-platform",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3210",
+    "build": "next build",
+    "start": "next start -p 3210",
+    "demo": "next build && next start -p 3210",
+    "db:reset": "rm -rf .data/pg .data/uploads && echo 'Базата е изчистена. Ще се създаде наново при следващото стартиране.'",
+    "test:site": "node tests/e2e.mjs",
+    "test:admin": "node tests/admin.mjs",
+    "test:cross": "node tests/cross.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.3.0",
+    "lenis": "^1.3.0",
+    "next": "^15.5.0",
+    "pg": "^8.13.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.11.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "playwright-core": "^1.50.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -1,0 +1,12 @@
+node_modules
+.next
+.next-*
+.data
+.env*.local
+*.log
+.DS_Store
+tests/shots
+.vercel
+.env*
+tsconfig.tsbuildinfo
+ZA-CLAUDE.md

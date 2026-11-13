@@ -1,0 +1,106 @@
+/* Общи променливи за сайта и админ панела. */
+:root {
+  --paper: #f3efe7;
+  --paper-2: #eae4d8;
+  --paper-3: #ddd5c5;
+  --white: #fffdf8;
+  --ink: #15181c;
+  --ink-2: #454a52;
+  --ink-3: #7b8088;
+  --line: rgba(21, 24, 28, 0.16);
+  --line-2: rgba(21, 24, 28, 0.08);
+  --lime: #c2d500;
+  --lime-2: #d4e635;
+  --lime-ink: #5d6a00;
+  --red: #d4432a;
+  --red-ink: #ad3118;
+  --sea: #0f3a44;
+  --sea-2: #1c5560;
+  --glow: #f4c56e;
+  --ok: #2c7a58;
+  --warn: #b7791f;
+  --viber: #7360f2;
+  --serif: var(--font-serif), 'Cormorant', Georgia, 'Times New Roman', serif;
+  --sans: var(--font-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --cond: var(--font-cond), var(--font-sans), system-ui, sans-serif;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'locl' 1, 'kern' 1;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+figure,
+blockquote {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--lime);
+  color: var(--ink);
+}

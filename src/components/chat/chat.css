@@ -1,0 +1,683 @@
+/* Чат помощникът: плаващ бутон, прозорец и вградено начало. */
+
+.cavatar {
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 20%;
+  background: var(--paper-3);
+}
+.cavatar--mark {
+  display: grid;
+  place-items: center;
+  background: var(--lime);
+  color: var(--ink);
+}
+.cavatar--mark svg {
+  width: 46%;
+  height: 46%;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 6px 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--white);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.2;
+  text-align: center;
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.chip:hover {
+  background: var(--lime);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 0 var(--ink);
+}
+.chip:active {
+  transform: none;
+  box-shadow: none;
+}
+.chip.is-on {
+  background: var(--ink);
+  color: var(--paper);
+}
+.chip--s {
+  min-height: 40px;
+  font-size: 0.94rem;
+  padding: 4px 14px;
+}
+
+/* Плаващият бутон */
+.claunch {
+  position: fixed;
+  z-index: 55;
+  right: clamp(14px, 1.6vw, 22px);
+  bottom: clamp(14px, 1.4vw, 18px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+.claunch > * {
+  pointer-events: auto;
+}
+.claunch__btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 58px;
+  padding: 0 20px 0 7px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  font-size: 1.04rem;
+  box-shadow: 0 14px 34px -10px rgba(21, 24, 28, 0.55), 0 0 0 3px var(--lime);
+  transition: transform 0.3s var(--ease-out), background 0.25s;
+  animation: launch-in 0.8s var(--ease-out) 1.2s both;
+}
+.claunch__btn::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  border: 3px solid var(--lime);
+  animation: ring 2.6s var(--ease) 2.4s infinite;
+  pointer-events: none;
+}
+@keyframes ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  70%,
+  100% {
+    transform: scale(1.18, 1.5);
+    opacity: 0;
+  }
+}
+@keyframes launch-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.claunch__btn:hover {
+  transform: translateY(-3px);
+}
+.claunch__ava {
+  position: relative;
+  display: block;
+}
+.claunch__ava i {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--lime);
+  border: 2.5px solid var(--ink);
+}
+.claunch__ico {
+  width: 20px;
+  height: 20px;
+  color: var(--lime);
+}
+/* На началния екран бутонът е свит, за да не закрива асансьора. Разгъва се при скрол. */
+.claunch__label {
+  max-width: 260px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.6s var(--ease-out), opacity 0.4s var(--ease);
+}
+@media (min-width: 1100px) {
+  html:not(.is-scrolled) .claunch--home .claunch__btn {
+    padding-right: 7px;
+    gap: 0;
+  }
+  html:not(.is-scrolled) .claunch--home .claunch__label {
+    max-width: 0;
+    opacity: 0;
+  }
+  html:not(.is-scrolled) .claunch--home .claunch__ico {
+    display: none;
+  }
+}
+.claunch__tease {
+  position: relative;
+  max-width: 290px;
+  background: var(--white);
+  border: 1.5px solid var(--ink);
+  border-radius: 16px 16px 4px 16px;
+  box-shadow: 0 12px 30px -12px rgba(21, 24, 28, 0.45);
+  animation: launch-in 0.6s var(--ease-out) both;
+}
+.claunch__msg {
+  display: block;
+  text-align: left;
+  padding: 14px 40px 14px 16px;
+  font-size: 0.99rem;
+  line-height: 1.38;
+  font-weight: 500;
+}
+.claunch__x {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--ink-3);
+}
+.claunch__x svg {
+  width: 11px;
+  height: 11px;
+}
+@media (max-width: 520px) {
+  .claunch__tease {
+    max-width: 244px;
+  }
+  .claunch__msg {
+    font-size: 0.92rem;
+    padding: 11px 36px 11px 13px;
+  }
+  .claunch__btn {
+    height: 56px;
+    font-size: 0.98rem;
+    padding-right: 18px;
+  }
+  .claunch__ava .cavatar {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .claunch__ico {
+    display: none;
+  }
+}
+
+/* Прозорецът */
+.cpanel {
+  position: fixed;
+  z-index: 80;
+  right: clamp(14px, 2vw, 26px);
+  bottom: clamp(14px, 2vw, 26px);
+  width: 420px;
+  max-width: calc(100vw - 28px);
+  height: min(700px, calc(100dvh - 40px));
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  box-shadow: 0 30px 80px -24px rgba(21, 24, 28, 0.6), 10px 10px 0 var(--lime);
+  overflow: hidden;
+  animation: panel-in 0.5s var(--ease-out) both;
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 600px) {
+  .cpanel {
+    inset: 0;
+    width: auto;
+    max-width: none;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .chat-open,
+  .chat-open body {
+    overflow: hidden;
+  }
+}
+.cpanel__head {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 12px 17px 16px;
+  background: var(--ink);
+  color: var(--paper);
+}
+.cpanel__who {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.cpanel__who b {
+  font-weight: 600;
+  font-size: 1.04rem;
+}
+.cpanel__who span {
+  font-size: 0.86rem;
+  color: rgba(243, 239, 231, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cpanel__close {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: var(--paper);
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.cpanel__close:hover {
+  background: rgba(243, 239, 231, 0.14);
+}
+.cpanel__close svg {
+  width: 14px;
+  height: 14px;
+}
+.cpanel__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: rgba(243, 239, 231, 0.16);
+}
+.cpanel__bar i {
+  display: block;
+  height: 100%;
+  background: var(--lime);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-out);
+}
+.cpanel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cturn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cmsg {
+  max-width: 86%;
+  padding: 11px 15px;
+  font-size: 1.02rem;
+  line-height: 1.4;
+}
+.cmsg--bot {
+  align-self: flex-start;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 16px 16px 16px 4px;
+}
+.cmsg--me {
+  align-self: flex-end;
+  background: var(--lime);
+  color: var(--ink);
+  font-weight: 600;
+  border-radius: 16px 16px 4px 16px;
+}
+.cmsg--in {
+  animation: msg-in 0.45s var(--ease-out) both;
+}
+@keyframes msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.cmsg--typing {
+  display: inline-flex;
+  gap: 5px;
+  padding: 15px 16px;
+}
+.cmsg--typing i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  animation: dot 0.9s ease-in-out infinite;
+}
+.cmsg--typing i:nth-child(2) {
+  animation-delay: 0.14s;
+}
+.cmsg--typing i:nth-child(3) {
+  animation-delay: 0.28s;
+}
+@keyframes dot {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+.cpanel__foot {
+  flex: none;
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--paper-2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 62%;
+  overflow-y: auto;
+}
+.cpanel__foot--idle {
+  min-height: 78px;
+}
+.cpanel__foot--exit p {
+  font-weight: 600;
+  line-height: 1.35;
+}
+.copts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  animation: msg-in 0.5s var(--ease-out) both;
+}
+.cnext {
+  align-self: flex-end;
+}
+.cback {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  padding: 4px 6px 4px 0;
+}
+.cback svg {
+  width: 14px;
+  height: 14px;
+}
+.cback:hover {
+  color: var(--ink);
+}
+.cpanel__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.clink {
+  font-weight: 600;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 1px;
+}
+.clink--mute {
+  color: var(--ink-2);
+  border-color: var(--line);
+  font-weight: 500;
+}
+.ctext textarea {
+  width: 100%;
+  resize: none;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  font-size: 1.02rem;
+  line-height: 1.4;
+}
+.ctext textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+.ctext {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ctext .cpanel__row {
+  justify-content: flex-end;
+  gap: 18px;
+}
+.csend {
+  width: 100%;
+  min-height: 58px;
+  font-size: 1.08rem;
+}
+
+.csum {
+  align-self: stretch;
+  background: var(--white);
+  border: 1.5px solid var(--ink);
+  padding: 16px 16px 8px;
+  border-radius: 4px;
+}
+.csum__tag {
+  display: inline-block;
+  font-family: var(--cond);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 4px;
+}
+.csum b {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.csum dl {
+  margin: 0;
+}
+.csum dl div {
+  display: grid;
+  grid-template-columns: 7em 1fr;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line-2);
+  font-size: 0.98rem;
+}
+.csum dt {
+  color: var(--ink-2);
+}
+.csum dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.cform {
+  gap: 10px;
+}
+.cform__two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.cform .input {
+  height: 48px;
+}
+.ccheck {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.ccheck input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--ink);
+}
+.ccheck a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.ccheck.is-bad {
+  color: var(--red-ink);
+}
+
+.cdone {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 18px 16px;
+  background: var(--white);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+}
+.cdone__ok {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--lime);
+  display: grid;
+  place-items: center;
+}
+.cdone__ok svg {
+  width: 24px;
+  height: 24px;
+}
+.cdone b {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
+.cdone__save {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 0.96rem;
+  color: var(--ink-2);
+}
+.cdone__save div {
+  display: flex;
+  gap: 8px;
+}
+.cdone__save .input {
+  height: 44px;
+  flex: 1;
+  min-width: 0;
+}
+.cdone .cpanel__row {
+  margin-top: 8px;
+}
+.cdone .form-ok a {
+  text-decoration: underline;
+}
+
+/* Вграденото начало на чата */
+.cstart {
+  position: relative;
+  background: var(--white);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  padding: clamp(18px, 2.2vw, 28px);
+  box-shadow: 10px 10px 0 var(--lime);
+}
+.cstart__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.cstart__head div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.cstart__head b {
+  font-weight: 600;
+}
+.cstart__head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.86rem;
+  color: var(--ink-2);
+}
+.cstart__head i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4fae5a;
+  box-shadow: 0 0 0 0 rgba(79, 174, 90, 0.5);
+  animation: live 2s ease-out infinite;
+}
+@keyframes live {
+  to {
+    box-shadow: 0 0 0 8px rgba(79, 174, 90, 0);
+  }
+}
+.cstart__q {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 2.2vw, 1.9rem);
+  line-height: 1.14;
+  margin-bottom: 16px;
+}
+.cstart__opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cstart__note {
+  margin-top: 14px;
+  font-size: 0.9rem;
+  color: var(--ink-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .claunch__btn,
+  .claunch__btn::before,
+  .claunch__tease,
+  .cpanel,
+  .cmsg--in,
+  .copts,
+  .cstart__head i {
+    animation: none !important;
+  }
+}
