@@ -122,6 +122,15 @@ export function normalizePhone(raw: string): string | null {
   return d;
 }
 
+/** Номер на запис от базата: цяло положително число, което се побира в integer, или null. */
+export function toId(v: unknown): number | null {
+  if (v === null || v === undefined || typeof v === 'object' || typeof v === 'boolean') return null;
+  const s = String(v).trim();
+  if (!/^\d{1,10}$/.test(s)) return null;
+  const n = Number(s);
+  return n >= 1 && n <= 2147483647 ? n : null;
+}
+
 /** +359888555011 става "0888 555 011" */
 export function phoneText(p?: string | null): string {
   if (!p) return '';

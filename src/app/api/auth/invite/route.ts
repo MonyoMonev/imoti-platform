@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 // Приемане на покана: кодът прави човека брокер. Без имейл и без потвърждение.
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const code = text(body.code, 12).toUpperCase();
   const first = text(body.first_name, 40);
   const last = text(body.last_name, 40);

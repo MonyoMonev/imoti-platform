@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireStaff } from '@/lib/auth';
 import { leadDetail, staffList } from '@/lib/admin-data';
 import { INTENTS, summarize } from '@/lib/chat-tree';
-import { dateText, fullName, phoneText, price, sourceLabel } from '@/lib/format';
+import { dateText, fullName, phoneText, price, sourceLabel, toId } from '@/lib/format';
 import { PageHead } from '@/components/admin/ui';
 import { AssignForm, NoteForm, StatusPicker } from '@/components/admin/LeadActions';
 import { pageName } from '@/components/admin/helpers';
@@ -20,7 +20,7 @@ const NOTIFY_STATUS: Record<string, string> = {
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireStaff();
   const { id } = await params;
-  const data = /^\d+$/.test(id) ? await leadDetail(user, Number(id)) : null;
+  const data = toId(id) ? await leadDetail(user, toId(id)!) : null;
   if (!data) notFound();
   const { lead, notes, events, notifications } = data;
   const boss = user.role === 'boss';

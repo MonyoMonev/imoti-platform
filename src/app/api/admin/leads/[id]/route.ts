@@ -1,5 +1,5 @@
 import { q, q1 } from '@/lib/db';
-import { LEAD_STATUS, fullName } from '@/lib/format';
+import { LEAD_STATUS, fullName, toId } from '@/lib/format';
 import { notifyLead } from '@/lib/notify';
 import { bad, ok, staffOrError, text } from '@/lib/admin-api';
 
@@ -11,13 +11,13 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   if (r.error) return r.error;
   const u = r.user;
   const { id: raw } = await ctx.params;
-  const id = Number(raw);
-  if (!Number.isInteger(id)) return bad('Няма такова запитване.', 404);
+  const id = toId(raw);
+  if (!id) return bad('Няма такова запитване.', 404);
   const lead = await q1(`select id, broker_id, status from leads where id = $1`, [id]);
   // Чуждо запитване за брокера изглежда като несъществуващо.
   if (!lead || (u.role !== 'boss' && lead.broker_id !== u.id)) return bad('Няма такова запитване.', 404);
 
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const action = String(body.action || '');
 
   if (action === 'status') {
@@ -44,9 +44,11 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
 
   if (action === 'assign') {
     if (u.role !== 'boss') return bad('Разпределя само управителят.', 403);
+    const brokerId = toId(body.broker_id);
+    if (!brokerId) return bad('Избери брокер.');
     const target = await q1(
       `select id, first_name, last_name from users where id = $1 and role in ('boss', 'broker') and active`,
-      [Number(body.broker_id)]
+      [brokerId]
     );
     if (!target) return bad('Избраният брокер не е активен.');
     if (target.id === lead.broker_id) return ok({ same: true });

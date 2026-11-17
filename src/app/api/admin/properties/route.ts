@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   const r = await staffOrError();
   if (r.error) return r.error;
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const parsed = await propertyInput(body, r.user, null);
   if (parsed.error || !parsed.data) return bad(parsed.error || 'Провери полетата.');
   const d = parsed.data;

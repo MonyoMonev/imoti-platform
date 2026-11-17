@@ -93,19 +93,33 @@ export async function listProperties(f: PropertyFilters = {}): Promise<Property[
     params.push(v);
     where.push(sql.replace('?', `$${params.length}`));
   };
-  if (f.deal === 'sale' || f.deal === 'rent') add('p.deal = ?', f.deal);
-  if (f.kind) add('p.kind = ?', f.kind);
-  if (f.rooms && Number(f.rooms)) {
-    if (Number(f.rooms) >= 4) add('p.rooms >= ?', 4);
-    else add('p.rooms = ?', Number(f.rooms));
+  // Филтрите идват от адреса, затова може да са всичко: повторени, с букви или с огромни числа.
+  const one = (v: unknown): string => (Array.isArray(v) ? String(v[0] ?? '') : typeof v === 'string' ? v : '').slice(0, 80);
+  const int = (v: unknown): number | null => {
+    const n = Number(one(v));
+    return Number.isFinite(n) && n > 0 && n <= 2000000000 ? Math.round(n) : null;
+  };
+  const deal = one(f.deal);
+  const kind = one(f.kind);
+  const district = one(f.district);
+  const broker = one(f.broker);
+  const rooms = int(f.rooms);
+  const max = int(f.max);
+  const min = int(f.min);
+  const area = int(f.area);
+  if (deal === 'sale' || deal === 'rent') add('p.deal = ?', deal);
+  if (kind) add('p.kind = ?', kind);
+  if (rooms) {
+    if (rooms >= 4) add('p.rooms >= ?', 4);
+    else add('p.rooms = ?', rooms);
   }
-  if (f.district) add('p.district = ?', f.district);
-  if (f.max && Number(f.max)) add('p.price <= ?', Number(f.max));
-  if (f.min && Number(f.min)) add('p.price >= ?', Number(f.min));
-  if (f.area && Number(f.area)) add('p.area >= ?', Number(f.area));
-  if (f.broker) add('b.slug = ?', f.broker);
-  const order =
-    f.sort === 'cheap' ? 'p.price asc' : f.sort === 'dear' ? 'p.price desc' : f.sort === 'big' ? 'p.area desc' : 'p.created_at desc';
+  if (district) add('p.district = ?', district);
+  if (max) add('p.price <= ?', max);
+  if (min) add('p.price >= ?', min);
+  if (area) add('p.area >= ?', area);
+  if (broker) add('b.slug = ?', broker);
+  const sort = one(f.sort);
+  const order = sort === 'cheap' ? 'p.price asc' : sort === 'dear' ? 'p.price desc' : sort === 'big' ? 'p.area desc' : 'p.created_at desc';
   const rows = await q(`select ${P_COLS} ${P_FROM} where ${where.join(' and ')} order by ${order}`, params);
   return clean<Property>(rows);
 }

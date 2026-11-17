@@ -431,6 +431,30 @@ const LINE_LABELS: Record<string, string> = {
 
 const ORDER = ['kind', 'rooms', 'area', 'where', 'budget', 'price', 'furn', 'what', 'when', 'pay', 'note'];
 
+/**
+ * Отговорите идват от браузъра, затова не им се вярва на сляпо: остават само познатите полета,
+ * като текст или списък от текстове с разумна дължина.
+ */
+export function cleanAnswers(raw: unknown): Answers {
+  const out: Answers = {};
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return out;
+  for (const k of ['intent', ...ORDER]) {
+    const v = (raw as Record<string, unknown>)[k];
+    if (typeof v === 'string') {
+      out[k] = v.slice(0, k === 'note' ? 1000 : 200);
+    } else if (typeof v === 'number' && Number.isFinite(v)) {
+      out[k] = String(v);
+    } else if (Array.isArray(v)) {
+      const list = v
+        .filter((x): x is string => typeof x === 'string' && x.trim() !== '')
+        .map((x) => x.slice(0, 100))
+        .slice(0, 20);
+      if (list.length) out[k] = list;
+    }
+  }
+  return out;
+}
+
 /** Превръща отговорите в четимо обобщение за клиента, брокера и Viber. */
 export function summarize(answers: Answers): { title: string; lines: [string, string][]; text: string } {
   const intent = String(answers.intent || '');

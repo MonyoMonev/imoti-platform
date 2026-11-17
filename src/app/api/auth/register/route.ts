@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 // Регистрация на клиент: две имена, телефон и парола. Без имейл и без потвърждения.
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const first = String(body.first_name || '').trim().slice(0, 40);
   const last = String(body.last_name || '').trim().slice(0, 40);
   const phone = normalizePhone(String(body.phone || ''));

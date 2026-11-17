@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { q, q1 } from '@/lib/db';
 import { currentUser } from '@/lib/auth';
 import { ensureVisitor } from '@/lib/visitor';
-import { EXIT_REASONS } from '@/lib/chat-tree';
+import { EXIT_REASONS, cleanAnswers } from '@/lib/chat-tree';
+import { toId } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +11,7 @@ const TYPES = ['open', 'answer', 'skip', 'back', 'summary', 'form', 'exit', 'clo
 
 // Всяка стъпка от чата се записва, за да вижда шефът докъде стигат хората.
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const sid = String(body.sid || '');
   const type = String(body.type || '');
   if (!/^[a-z0-9]{12,40}$/i.test(sid) || !TYPES.includes(type)) {
@@ -18,14 +19,14 @@ export async function POST(req: Request) {
   }
   const step = body.step ? String(body.step).slice(0, 40) : null;
   const value = body.value == null ? null : String(Array.isArray(body.value) ? body.value.join(', ') : body.value).slice(0, 600);
-  const answers = body.answers && typeof body.answers === 'object' ? body.answers : null;
+  const answers = body.answers && typeof body.answers === 'object' ? cleanAnswers(body.answers) : null;
 
   let s = await q1(`select id from chat_sessions where id = $1`, [sid]);
   if (!s) {
     const user = await currentUser();
     const ctx = body.ctx || {};
     const v = await ensureVisitor({ userId: user?.role === 'client' ? user.id : null });
-    const brokerId = Number(ctx.brokerId) || v.refBrokerId || null;
+    const brokerId = toId(ctx.brokerId) || v.refBrokerId || null;
     await q(
       `insert into chat_sessions (id, visitor_id, user_id, broker_id, property_id, source, page, device, last_step)
        values ($1,$2,$3,$4,$5,$6,$7,$8,'start') on conflict (id) do nothing`,
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
         v.vid,
         user?.role === 'client' ? user.id : null,
         brokerId,
-        Number(ctx.propertyId) || null,
+        toId(ctx.propertyId),
         v.source,
         String(body.path || '/').slice(0, 200),
         v.device,

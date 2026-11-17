@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { BRAND } from '@/lib/brand';
+import { DISTRICTS } from '@/lib/format';
 import { listProperties, type PropertyFilters } from '@/lib/data';
 import { PropertyCard, Tri } from '@/components/site/ui';
 import Filters from '@/components/site/Filters';
@@ -16,6 +17,9 @@ export const metadata: Metadata = {
 export default async function Page({ searchParams }: { searchParams: Promise<PropertyFilters> }) {
   const f = await searchParams;
   const items = await listProperties(f);
+  // Районът идва от адреса: в заглавието влиза само ако е познат или по него има намерени имоти.
+  const district =
+    typeof f.district === 'string' && ((DISTRICTS as readonly string[]).includes(f.district) || items.length > 0) ? f.district.slice(0, 60) : '';
   const title = f.deal === 'rent' ? 'Имоти под наем' : f.deal === 'sale' ? 'Имоти за продажба' : 'Всички имоти';
   return (
     <main>
@@ -28,10 +32,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<Pro
           </p>
           <h1 className="title">
             {title}
-            {f.district ? (
+            {district ? (
               <>
                 {' '}
-                в <span className="mark">{f.district}</span>
+                в <span className="mark">{district}</span>
               </>
             ) : null}
           </h1>

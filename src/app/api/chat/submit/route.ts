@@ -3,20 +3,20 @@ import { cookies } from 'next/headers';
 import { q, q1 } from '@/lib/db';
 import { currentUser } from '@/lib/auth';
 import { ensureVisitor } from '@/lib/visitor';
-import { normalizePhone, phoneText } from '@/lib/format';
-import { summarize } from '@/lib/chat-tree';
+import { normalizePhone, phoneText, toId } from '@/lib/format';
+import { cleanAnswers, summarize } from '@/lib/chat-tree';
 import { notifyLead } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
 
 // Финалът на чата: имена и телефон. Създава запитване и известява брокера.
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const sid = /^[a-z0-9]{12,40}$/i.test(String(body.sid || '')) ? String(body.sid) : null;
   const first = String(body.first_name || '').trim().slice(0, 40);
   const last = String(body.last_name || '').trim().slice(0, 40);
   const phone = normalizePhone(String(body.phone || ''));
-  const answers = body.answers && typeof body.answers === 'object' ? body.answers : {};
+  const answers = cleanAnswers(body.answers);
   const ctx = body.ctx || {};
 
   if (first.length < 2) return NextResponse.json({ ok: false, field: 'first_name', error: 'Напиши името си.' }, { status: 400 });
@@ -40,11 +40,11 @@ export async function POST(req: Request) {
   }
 
   const session = sid ? await q1(`select * from chat_sessions where id = $1`, [sid]) : null;
-  const propertyId = Number(ctx.propertyId) || session?.property_id || null;
+  const propertyId = toId(ctx.propertyId) || session?.property_id || null;
   const property = propertyId ? await q1(`select id, broker_id from properties where id = $1`, [propertyId]) : null;
 
   // Брокерът: този, който е представил имота, после брокерът на самия имот, иначе шефът разпределя.
-  let brokerId: number | null = Number(ctx.brokerId) || session?.broker_id || v.refBrokerId || property?.broker_id || null;
+  let brokerId: number | null = toId(ctx.brokerId) || session?.broker_id || v.refBrokerId || property?.broker_id || null;
   if (brokerId) {
     const ok = await q1(`select id from users where id = $1 and active and role in ('boss','broker')`, [brokerId]);
     if (!ok) brokerId = property?.broker_id || null;

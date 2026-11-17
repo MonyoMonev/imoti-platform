@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireStaff } from '@/lib/auth';
 import { clientDetail } from '@/lib/admin-data';
 import { INTENTS } from '@/lib/chat-tree';
-import { ago, dateText, fullName, money, phoneText, price, sourceLabel } from '@/lib/format';
+import { ago, dateText, fullName, money, phoneText, price, sourceLabel, toId } from '@/lib/format';
 import { Empty, LeadStatus, PageHead } from '@/components/admin/ui';
 import { leadWants, many, pageName } from '@/components/admin/helpers';
 
@@ -12,7 +12,7 @@ export const metadata = { title: 'Клиент' };
 export default async function ClientPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireStaff();
   const { id } = await params;
-  const data = /^\d+$/.test(id) ? await clientDetail(user, Number(id)) : null;
+  const data = toId(id) ? await clientDetail(user, toId(id)!) : null;
   if (!data) notFound();
   const { c, views, favs, leads } = data;
 

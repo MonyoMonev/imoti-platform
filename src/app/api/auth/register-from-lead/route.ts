@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 // След изпратено запитване човекът може да си направи профил само с парола:
 // имената и телефонът идват от запитването, което току що е оставил.
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const password = String(body.password || '');
   if (password.length < 6) {
     return NextResponse.json({ ok: false, error: 'Паролата трябва да е поне 6 знака.' }, { status: 400 });

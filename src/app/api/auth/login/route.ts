@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 // Вход с телефон и парола. Работи и за клиенти, и за брокери, и за шефа.
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const phone = normalizePhone(String(body.phone || ''));
   const password = String(body.password || '');
   if (!phone || !password) {

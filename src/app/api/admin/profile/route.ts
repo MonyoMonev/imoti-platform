@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const r = await staffOrError();
   if (r.error) return r.error;
   const u = r.user;
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const section = String(body.section || '');
 
   if (section === 'account') {

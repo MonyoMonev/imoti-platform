@@ -66,7 +66,13 @@ export default function Page() {
             </div>
           </div>
           <div className="map">
-            <iframe title="Карта с офиса" loading="lazy" src={`https://www.google.com/maps?q=${q}&z=16&output=embed`} referrerPolicy="no-referrer-when-downgrade" />
+            <iframe
+              title="Карта с офиса"
+              loading="lazy"
+              src={`https://www.google.com/maps?q=${q}&z=16&output=embed`}
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
           </div>
         </section>
       </div>

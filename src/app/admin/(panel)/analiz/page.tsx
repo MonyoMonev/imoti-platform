@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { requireBoss } from '@/lib/auth';
 import { answerPath, chatAnalysis, pct, staffList } from '@/lib/admin-data';
 import { exitReasonLabel, stepShort } from '@/lib/chat-tree';
-import { SOURCES, dateText, duration, fullName, sourceLabel } from '@/lib/format';
+import { SOURCES, dateText, duration, fullName, sourceLabel, toId } from '@/lib/format';
 import { Empty, HBars, PageHead } from '@/components/admin/ui';
 import AutoForm from '@/components/admin/AutoForm';
 import { many } from '@/components/admin/helpers';
@@ -19,7 +19,7 @@ export default async function AnalysisPage({
   await requireBoss();
   const sp = await searchParams;
   const days = ['7', '30', '90'].includes(String(sp.dni)) ? Number(sp.dni) : 30;
-  const broker = /^\d+$/.test(String(sp.broker)) ? Number(sp.broker) : null;
+  const broker = toId(sp.broker);
   const source = SOURCES[String(sp.source)] ? String(sp.source) : null;
   const device = DEVICES[String(sp.device)] ? String(sp.device) : null;
   const a = await chatAnalysis({ days, brokerId: broker, source, device });

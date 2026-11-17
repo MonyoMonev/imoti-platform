@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   const r = await bossOrError();
   if (r.error) return r.error;
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
 
   if (body.action === 'wipe-demo') {
     if (String(body.confirm || '').trim().toUpperCase() !== 'ИЗТРИЙ') return bad('Напиши ИЗТРИЙ, за да потвърдиш.');

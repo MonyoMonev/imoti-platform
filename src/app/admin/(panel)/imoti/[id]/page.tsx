@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireStaff } from '@/lib/auth';
 import { q1 } from '@/lib/db';
 import { propertyById, staffList } from '@/lib/admin-data';
-import { DEALS, KINDS, area, floorText, fullName, price } from '@/lib/format';
+import { DEALS, KINDS, area, floorText, fullName, price, toId } from '@/lib/format';
 import { PageHead, PropStatus } from '@/components/admin/ui';
 import PropertyForm from '@/components/admin/PropertyForm';
 
@@ -19,7 +19,7 @@ export default async function PropertyPage({
   const user = await requireStaff();
   const { id } = await params;
   const sp = await searchParams;
-  const p = /^\d+$/.test(id) ? await propertyById(Number(id)) : null;
+  const p = toId(id) ? await propertyById(toId(id)!) : null;
   if (!p) notFound();
   const boss = user.role === 'boss';
   const own = boss || p.broker_id === user.id;

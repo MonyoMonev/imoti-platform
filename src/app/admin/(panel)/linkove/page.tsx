@@ -1,7 +1,7 @@
 import { requireStaff } from '@/lib/auth';
 import { linkOptions, linkStats, pct } from '@/lib/admin-data';
 import { BRAND } from '@/lib/brand';
-import { fullName, sourceLabel } from '@/lib/format';
+import { fullName, sourceLabel, toId } from '@/lib/format';
 import { Empty, PageHead } from '@/components/admin/ui';
 import LinkBuilder from '@/components/admin/LinkBuilder';
 
@@ -32,7 +32,7 @@ export default async function LinksPage({ searchParams }: { searchParams: Promis
               properties={properties.map((p: any) => ({ ...p, photos: Array.isArray(p.photos) ? p.photos : [] }))}
               brokers={ordered.map((b: any) => ({ id: b.id, name: fullName(b), slug: b.slug }))}
               siteUrl={BRAND.siteUrl}
-              initialProperty={/^\d+$/.test(String(sp.imot)) ? Number(sp.imot) : undefined}
+              initialProperty={toId(sp.imot) ?? undefined}
               fixedBroker={!boss}
             />
           ) : (

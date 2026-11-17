@@ -11,11 +11,13 @@ export async function deviceKind(): Promise<'mobile' | 'desktop'> {
 }
 
 /** Откъде е дошъл човекът: от ?k= в линка или по препращащия сайт. */
-export function inferSource(k?: string | null, referrer?: string | null): string | null {
+export function inferSource(kRaw?: unknown, referrer?: unknown): string | null {
   const allowed = ['fb', 'ig', 'tt', 'viber', 'google'];
+  // Стойностите идват от адреса и от браузъра, затова може да са всичко: приемаме само текст.
+  const k = typeof kRaw === 'string' ? kRaw : '';
   if (k && allowed.includes(k)) return k;
   if (k) return k.slice(0, 20).replace(/[^a-z0-9_]/gi, '') || null;
-  const ref = (referrer || '').toLowerCase();
+  const ref = (typeof referrer === 'string' ? referrer : '').toLowerCase();
   if (!ref) return null;
   if (ref.includes('facebook.') || ref.includes('fb.')) return 'fb';
   if (ref.includes('instagram.')) return 'ig';

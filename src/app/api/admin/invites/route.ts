@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   const r = await bossOrError();
   if (r.error) return r.error;
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const note = text(body.note, 120) || null;
   let code = '';
   for (let i = 0; i < 6; i++) {

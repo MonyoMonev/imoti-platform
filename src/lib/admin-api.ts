@@ -32,7 +32,7 @@ export function text(v: any, max = 200): string {
 export function intOrNull(v: any): number | null {
   if (v === null || v === undefined || v === '') return null;
   const n = Number(String(v).replace(/\s/g, '').replace(',', '.'));
-  if (!Number.isFinite(n)) return null;
+  if (!Number.isFinite(n) || Math.abs(n) > 2147483647) return null;
   return Math.round(n);
 }
 

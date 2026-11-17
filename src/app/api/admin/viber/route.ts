@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   const r = await staffOrError();
   if (r.error) return r.error;
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const token = String(body.token || '').trim();
   if (token.length < 20 || token.length > 200 || /\s/.test(token)) {
     return bad('Това не прилича на токен от Viber. Копирай го целия от „Developer Tools“ в канала.');

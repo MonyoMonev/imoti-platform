@@ -1,12 +1,13 @@
 import { q, q1 } from '@/lib/db';
+import { toId } from '@/lib/format';
 import { bad, ok, staffOrError } from '@/lib/admin-api';
 import { propertyInput } from '@/lib/admin-write';
 
 export const dynamic = 'force-dynamic';
 
 async function load(raw: string) {
-  const id = Number(raw);
-  if (!Number.isInteger(id)) return null;
+  const id = toId(raw);
+  if (!id) return null;
   return q1(`select * from properties where id = $1`, [id]);
 }
 
@@ -17,7 +18,7 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
   const p = await load(id);
   if (!p) return bad('Няма такъв имот.', 404);
   if (r.user.role !== 'boss' && p.broker_id !== r.user.id) return bad('Този имот е на друг брокер.', 403);
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const parsed = await propertyInput(body, r.user, p);
   if (parsed.error || !parsed.data) return bad(parsed.error || 'Провери полетата.');
   const d = parsed.data;

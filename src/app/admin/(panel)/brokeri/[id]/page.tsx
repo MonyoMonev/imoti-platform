@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireBoss } from '@/lib/auth';
 import { brokerProfile } from '@/lib/admin-data';
-import { fullName, phoneText } from '@/lib/format';
+import { fullName, phoneText, toId } from '@/lib/format';
 import { PageHead } from '@/components/admin/ui';
 import { PublicProfileForm } from '@/components/admin/ProfileForms';
 import { ResetPassword, VisibilityForm } from '@/components/admin/TeamControls';
@@ -12,7 +12,7 @@ export const metadata = { title: 'Профил на брокер' };
 export default async function BrokerEditPage({ params }: { params: Promise<{ id: string }> }) {
   await requireBoss();
   const { id } = await params;
-  const b = /^\d+$/.test(id) ? await brokerProfile(Number(id)) : null;
+  const b = toId(id) ? await brokerProfile(toId(id)!) : null;
   if (!b) notFound();
 
   return (

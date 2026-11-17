@@ -1,6 +1,6 @@
 import { q, q1 } from '@/lib/db';
 import { hashPassword } from '@/lib/password';
-import { fullName } from '@/lib/format';
+import { fullName, toId } from '@/lib/format';
 import { bad, bossOrError, intOrNull, ok, text } from '@/lib/admin-api';
 import { profileInput, saveProfile } from '@/lib/admin-write';
 
@@ -11,21 +11,22 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   const r = await bossOrError();
   if (r.error) return r.error;
   const { id: raw } = await ctx.params;
-  const id = Number(raw);
-  const target = Number.isInteger(id)
+  const id = toId(raw);
+  const target = id
     ? await q1(`select id, role, active, first_name, last_name from users where id = $1 and role in ('boss', 'broker')`, [id])
     : null;
   if (!target) return bad('Няма такъв човек в екипа.', 404);
-  const body = await req.json().catch(() => ({}));
+  const body = (await req.json().catch(() => null)) || {};
   const action = String(body.action || '');
 
   if (action === 'deactivate') {
     if (target.id === r.user.id || target.role === 'boss') return bad('Профилът на управителя не може да се спира.');
     let moved = 0;
     if (body.move_to) {
-      const to = await q1(`select id, first_name, last_name from users where id = $1 and role in ('boss', 'broker') and active`, [
-        Number(body.move_to),
-      ]);
+      const moveTo = toId(body.move_to);
+      const to = moveTo
+        ? await q1(`select id, first_name, last_name from users where id = $1 and role in ('boss', 'broker') and active`, [moveTo])
+        : null;
       if (!to || to.id === target.id) return bad('Избери активен колега, който да поеме имотите.');
       const props = await q(`update properties set broker_id = $1, updated_at = now() where broker_id = $2 returning id`, [to.id, target.id]);
       const leads = await q(
